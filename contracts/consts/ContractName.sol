@@ -12,4 +12,7 @@ contract ContractName {
 
     bytes32 internal constant ContractName_WorkerStorage = "WorkerStorage";
     bytes32 internal constant ContractName_WorkerService = "WorkerService";
+
+    bytes32 internal constant ContractName_UserStorage = "UserStorage";
+    bytes32 internal constant ContractName_UserService = "UserService";
 }

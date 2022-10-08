@@ -28,7 +28,7 @@ contract CertificateService is ContractName, IWorkerService, BusinessConsts {
         );
 
         bool exist = workerStorage.checkWorkerExist(worker.securityNo);
-        require(!exist, "this securityNo has already existed");
+        require(!exist, "this securityNo already exists");
         workerStorage.createWorker(worker);
     }
 

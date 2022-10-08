@@ -17,7 +17,7 @@ contract CareerService is ICareerService, ContractName, BusinessConsts {
 
     function addWorkExperience(
         bytes18 securityNo,
-        WorkExperienceDefine.WorkExperience calldata workExperience
+        WorkExperienceDefine.WorkExperience memory workExperience
     ) external {
         IWorkerStorage workerStorage = IWorkerStorage(
             dispatcher.getExistedAddress(
@@ -98,7 +98,7 @@ contract CareerService is ICareerService, ContractName, BusinessConsts {
         );
         bool exist = workerStorage.checkWorkerExist(securityNo);
         require(exist, "securityNo not exist in worker repo, append it first");
-        
+
         ICareerStorage careerIntr = ICareerStorage(
             dispatcher.getExistedAddress(
                 ContractName_CareerStorage,
