@@ -6,17 +6,7 @@ import "./Owned.sol";
 contract Dispatcher is Owned {
     mapping(bytes32 => address) public repository;
 
-    bytes32 public constant Contract_CareerStorage = "CareerStorage";
-
     constructor(address _owner) Owned(_owner) {}
-
-    /* ========= PUBLIC FUNCTIONS ========== */
-
-    // function rebuildCaches(MixinResolver[] calldata destinations) external {
-    //     for (uint i = 0; i < destinations.length; i++) {
-    //         destinations[i].rebuildCache();
-    //     }
-    // }
 
     function importAddress(bytes32 name, address destination)
         external

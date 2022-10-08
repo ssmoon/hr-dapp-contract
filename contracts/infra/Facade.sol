@@ -2,6 +2,8 @@
 pragma solidity 0.8.17;
 
 import "./Dispatcher.sol";
+import "./RestrictedUser.sol";
+import "./Owned.sol";
 import "../consts/ContractName.sol";
 import "../interface/IUserService.sol";
 import "../interface/ICertificateService.sol";
@@ -9,17 +11,16 @@ import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
 import "../interface/IFacade.sol";
 
-contract Facade is IFacade, ContractName {
-    Dispatcher private dispatcher;
-
-    constructor(Dispatcher _dispatcher) {
-        dispatcher = _dispatcher;
-    }
+contract Facade is IFacade, RestrictedUser, Owned {
+    constructor(Dispatcher _dispatcher, address _owner)
+        RestrictedUser(_dispatcher)
+        Owned(_owner)
+    {}
 
     function createCertificate(
         bytes18 securityNo,
         CertificateDefine.Certificate calldata certifcate
-    ) external {
+    ) external restricted {
         ICertificateService certificateService = ICertificateService(
             dispatcher.getExistedAddress(
                 ContractName_CertificateService,
@@ -46,7 +47,7 @@ contract Facade is IFacade, ContractName {
     function addWorkExperience(
         bytes18 securityNo,
         WorkExperienceDefine.WorkExperience calldata workExperience
-    ) external {
+    ) external restricted {
         ICareerService careerService = ICareerService(
             dispatcher.getExistedAddress(
                 ContractName_CareerService,
@@ -56,7 +57,10 @@ contract Facade is IFacade, ContractName {
         careerService.addWorkExperience(securityNo, workExperience);
     }
 
-    function finishLastCareer(bytes18 securityNo, uint16 endYear) external {
+    function finishLastCareer(bytes18 securityNo, uint16 endYear)
+        external
+        restricted
+    {
         ICareerService careerService = ICareerService(
             dispatcher.getExistedAddress(
                 ContractName_CareerService,
@@ -79,7 +83,10 @@ contract Facade is IFacade, ContractName {
         return careerService.getWorkExperienceBySecurityNo(securityNo);
     }
 
-    function createWorker(WorkerDefine.Worker calldata worker) external {
+    function createWorker(WorkerDefine.Worker calldata worker)
+        external
+        restricted
+    {
         IWorkerService workerService = IWorkerService(
             dispatcher.getExistedAddress(
                 ContractName_WorkerService,
@@ -103,7 +110,7 @@ contract Facade is IFacade, ContractName {
         return workerService.getWorkerBySecurityNo(securityNo);
     }
 
-    function createUser(address addr) external {
+    function createUser(address addr) external onlyOwner {
         IUserService userService = IUserService(
             dispatcher.getExistedAddress(
                 ContractName_UserService,
@@ -113,7 +120,7 @@ contract Facade is IFacade, ContractName {
         userService.createUser(addr);
     }
 
-    function removeUser(address addr) external {
+    function removeUser(address addr) external onlyOwner {
         IUserService userService = IUserService(
             dispatcher.getExistedAddress(
                 ContractName_UserService,

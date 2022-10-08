@@ -18,19 +18,21 @@ contract Owned {
     }
 
     function acceptOwnership() external {
-        require(msg.sender == nominatedOwner, "You must be nominated before you can accept ownership");
+        require(
+            msg.sender == nominatedOwner,
+            "You must be nominated before you can accept ownership"
+        );
         emit OwnerChanged(owner, nominatedOwner);
         owner = nominatedOwner;
         nominatedOwner = address(0);
     }
 
-    modifier onlyOwner {
-        _onlyOwner();
+    modifier onlyOwner() {
+        require(
+            msg.sender == owner,
+            "Only the contract owner may perform this action"
+        );
         _;
-    }
-
-    function _onlyOwner() private view {
-        require(msg.sender == owner, "Only the contract owner may perform this action");
     }
 
     event OwnerNominated(address newOwner);
