@@ -30,4 +30,8 @@ contract WorkerStorage is IWorkerStorage {
     {
         return workerMap[securityNo];
     }
+
+    function checkWorkerExist(bytes18 securityNo) external view returns (bool) {
+        return workerMap[securityNo].isValue;
+    }
 }

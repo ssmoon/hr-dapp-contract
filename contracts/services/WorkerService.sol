@@ -7,7 +7,7 @@ import "../interface/IWorkerStorage.sol";
 import "../interface/IWorkerService.sol";
 import "../infra/Dispatcher.sol";
 
-contract CertificateService is ContractName, IWorkerStorage, BusinessConsts {
+contract CertificateService is ContractName, IWorkerService, BusinessConsts {
     Dispatcher public dispatcher;
 
     constructor(Dispatcher _dispatcher) {
@@ -27,9 +27,8 @@ contract CertificateService is ContractName, IWorkerStorage, BusinessConsts {
             )
         );
 
-        WorkerDefine.Worker memory existedWorker = workerStorage
-            .getWorkerBySecurityNo(worker.securityNo);
-        require(!existedWorker.isValue, "this securityNo has already existed");
+        bool exist = workerStorage.checkWorkerExist(worker.securityNo);
+        require(!exist, "this securityNo has already existed");
         workerStorage.createWorker(worker);
     }
 

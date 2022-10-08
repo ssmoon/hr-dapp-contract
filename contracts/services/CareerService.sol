@@ -6,6 +6,7 @@ import "../infra/Dispatcher.sol";
 import "../consts/ContractName.sol";
 import "../consts/BusinessConsts.sol";
 import "../interface/ICareerStorage.sol";
+import "../interface/IWorkerStorage.sol";
 
 contract CareerService is ICareerService, ContractName, BusinessConsts {
     Dispatcher public dispatcher;
@@ -18,6 +19,15 @@ contract CareerService is ICareerService, ContractName, BusinessConsts {
         bytes18 securityNo,
         WorkExperienceDefine.WorkExperience calldata workExperience
     ) external {
+        IWorkerStorage workerStorage = IWorkerStorage(
+            dispatcher.getExistedAddress(
+                ContractName_WorkerStorage,
+                "WorkerStorage not Found"
+            )
+        );
+        bool exist = workerStorage.checkWorkerExist(securityNo);
+        require(exist, "securityNo not exist in worker repo, append it first");
+
         uint16 currentYear = (uint16)((block.timestamp / 31557600) + 1970);
         require(
             workExperience.startAt >= MIN_WORK_START_YEAR &&
@@ -47,6 +57,15 @@ contract CareerService is ICareerService, ContractName, BusinessConsts {
     }
 
     function finishLastCareer(bytes18 securityNo, uint16 endYear) external {
+        IWorkerStorage workerStorage = IWorkerStorage(
+            dispatcher.getExistedAddress(
+                ContractName_WorkerStorage,
+                "WorkerStorage not Found"
+            )
+        );
+        bool exist = workerStorage.checkWorkerExist(securityNo);
+        require(exist, "securityNo not exist in worker repo, append it first");
+
         ICareerStorage careerIntr = ICareerStorage(
             dispatcher.getExistedAddress(
                 ContractName_CareerStorage,
@@ -71,6 +90,15 @@ contract CareerService is ICareerService, ContractName, BusinessConsts {
         view
         returns (WorkExperienceDefine.WorkExperience[] memory)
     {
+        IWorkerStorage workerStorage = IWorkerStorage(
+            dispatcher.getExistedAddress(
+                ContractName_WorkerStorage,
+                "WorkerStorage not Found"
+            )
+        );
+        bool exist = workerStorage.checkWorkerExist(securityNo);
+        require(exist, "securityNo not exist in worker repo, append it first");
+        
         ICareerStorage careerIntr = ICareerStorage(
             dispatcher.getExistedAddress(
                 ContractName_CareerStorage,
