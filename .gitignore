@@ -1,0 +1,17 @@
+node_modules
+*.log
+dist
+test-lib/**/*.js
+coverage
+.history
+.nyc_output
+.idea
+.vscode
+.next
+temp
+yarn-error.log
+.build
+
+
+# macOS
+.DS_Store
