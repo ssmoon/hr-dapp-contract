@@ -7,7 +7,7 @@ import "../interface/IWorkerStorage.sol";
 import "../interface/IWorkerService.sol";
 import "../infra/Dispatcher.sol";
 
-contract CertificateService is ContractName, IWorkerService, BusinessConsts {
+contract WorkerService is ContractName, IWorkerService, BusinessConsts {
     Dispatcher public dispatcher;
 
     constructor(Dispatcher _dispatcher) {
