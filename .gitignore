@@ -10,7 +10,7 @@ coverage
 .next
 temp
 yarn-error.log
-.build
+build/
 
 
 # macOS
