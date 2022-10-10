@@ -6,9 +6,20 @@ import "../consts/BusinessConsts.sol";
 import "../interface/IWorkerStorage.sol";
 import "../interface/IWorkerService.sol";
 import "../infra/BaseResolver.sol";
+import "../interface/IGetContractName.sol";
 
-contract WorkerService is ContractName, IWorkerService, BusinessConsts, BaseResolver {
+contract WorkerService is
+    ContractName,
+    IWorkerService,
+    BusinessConsts,
+    IGetContractName,
+    BaseResolver
+{
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
+
+    function getContractName() external pure returns (bytes32) {
+        return ContractName_WorkerService;
+    }
 
     function createWorker(WorkerDefine.Worker calldata worker) external {
         require(

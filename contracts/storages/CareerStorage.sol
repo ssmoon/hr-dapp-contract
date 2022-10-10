@@ -2,12 +2,23 @@
 pragma solidity 0.8.17;
 
 import "../models/WorkExperienceDefine.sol";
+import "../interface/IGetContractName.sol";
 import "../infra/Dispatcher.sol";
 import "../infra/BaseResolver.sol";
 import "../interface/ICareerStorage.sol";
+import "../consts/ContractName.sol";
 
-contract CareerStorage is ICareerStorage, BaseResolver {
+contract CareerStorage is
+    ICareerStorage,
+    BaseResolver,
+    ContractName,
+    IGetContractName
+{
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
+
+    function getContractName() external pure returns (bytes32) {
+        return ContractName_CareerStorage;
+    }
 
     mapping(bytes18 => WorkExperienceDefine.WorkExperience[]) workerExperienceMap;
 

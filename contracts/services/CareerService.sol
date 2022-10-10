@@ -7,9 +7,20 @@ import "../consts/BusinessConsts.sol";
 import "../interface/ICareerStorage.sol";
 import "../interface/IWorkerStorage.sol";
 import "../interface/ICareerService.sol";
+import "../interface/IGetContractName.sol";
 
-contract CareerService is ICareerService, ContractName, BusinessConsts, BaseResolver {
+contract CareerService is
+    ICareerService,
+    ContractName,
+    BusinessConsts,
+    BaseResolver,
+    IGetContractName
+{
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
+
+    function getContractName() external pure returns (bytes32) {
+        return ContractName_CareerService;
+    }
 
     function addWorkExperience(
         bytes18 securityNo,

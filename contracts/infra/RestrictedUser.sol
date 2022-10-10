@@ -5,11 +5,10 @@ import "../infra/Dispatcher.sol";
 import "../consts/ContractName.sol";
 import "../interface/IUserStorage.sol";
 import "../infra/BaseResolver.sol";
+import "../interface/IGetContractName.sol";
 
 contract RestrictedUser is ContractName, BaseResolver {
-    constructor(address _dispatcher)
-        BaseResolver(_dispatcher)
-    {}
+    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     modifier restricted() {
         IUserStorage userStorage = IUserStorage(

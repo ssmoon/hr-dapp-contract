@@ -5,10 +5,20 @@ import "../consts/ContractName.sol";
 import "../consts/BusinessConsts.sol";
 import "../interface/IUserStorage.sol";
 import "../interface/IUserService.sol";
+import "../interface/IGetContractName.sol";
 import "../infra/BaseResolver.sol";
 
-contract UserService is ContractName, IUserService, BaseResolver {
+contract UserService is
+    ContractName,
+    IUserService,
+    BaseResolver,
+    IGetContractName
+{
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
+
+    function getContractName() external pure returns (bytes32) {
+        return ContractName_UserService;
+    }
 
     function createUser(address addr) external {
         IUserStorage userStorage = IUserStorage(

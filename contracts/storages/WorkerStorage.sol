@@ -4,9 +4,20 @@ pragma solidity 0.8.17;
 import "../models/WorkerDefine.sol";
 import "../infra/BaseResolver.sol";
 import "../interface/IWorkerStorage.sol";
+import "../interface/IGetContractName.sol";
+import "../consts/ContractName.sol";
 
-contract WorkerStorage is IWorkerStorage, BaseResolver {
+contract WorkerStorage is
+    IWorkerStorage,
+    ContractName,
+    BaseResolver,
+    IGetContractName
+{
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
+
+    function getContractName() external pure returns (bytes32) {
+        return ContractName_WorkerStorage;
+    }
 
     mapping(bytes18 => WorkerDefine.Worker) workerMap;
 

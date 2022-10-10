@@ -4,11 +4,16 @@ pragma solidity 0.8.17;
 import "./Owned.sol";
 import "../interface/IDispatcher.sol";
 import "../consts/ContractName.sol";
+import "../interface/IGetContractName.sol";
 
-contract Dispatcher is Owned, IDispatcher {
+contract Dispatcher is Owned, IDispatcher, ContractName, IGetContractName {
     mapping(bytes32 => address) public repository;
 
     constructor(address _owner) Owned(_owner) {}
+
+    function getContractName() external pure override returns (bytes32) {
+        return ContractName_Dispatcher;
+    }
 
     function importAddress(bytes32 name, address destination)
         external
