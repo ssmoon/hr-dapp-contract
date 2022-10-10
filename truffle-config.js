@@ -41,6 +41,10 @@
  * https://trufflesuite.com/docs/truffle/getting-started/using-the-truffle-dashboard/
  */
 
+require("ts-node").register({
+  files: true,
+});
+
 // require('dotenv').config();
 // const { MNEMONIC, PROJECT_ID } = process.env;
 
@@ -64,11 +68,12 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
-    // development: {
-    //  host: "127.0.0.1",     // Localhost (default: none)
-    //  port: 8545,            // Standard Ethereum port (default: none)
-    //  network_id: "*",       // Any network (default: none)
-    // },
+    development: {
+      host: "127.0.0.1",
+      port: 8545,
+      network_id: "*",
+      from: "0x3bd046fE96b7c940B259B653cbde7A1cA1450734"
+    },
     //
     // An additional network, but with some advanced options…
     // advanced: {

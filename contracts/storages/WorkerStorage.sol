@@ -2,15 +2,11 @@
 pragma solidity 0.8.17;
 
 import "../models/WorkerDefine.sol";
-import "../infra/Dispatcher.sol";
+import "../infra/BaseResolver.sol";
 import "../interface/IWorkerStorage.sol";
 
-contract WorkerStorage is IWorkerStorage {
-    Dispatcher public dispatcher;
-
-    constructor(Dispatcher _dispatcher) {
-        dispatcher = _dispatcher;
-    }
+contract WorkerStorage is IWorkerStorage, BaseResolver {
+    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     mapping(bytes18 => WorkerDefine.Worker) workerMap;
 

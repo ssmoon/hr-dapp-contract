@@ -1,15 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-import "../infra/Dispatcher.sol";
+import "../infra/BaseResolver.sol";
 import "../interface/IUserStorage.sol";
 
-contract UserStorage is IUserStorage {
-    Dispatcher public dispatcher;
-
-    constructor(Dispatcher _dispatcher) {
-        dispatcher = _dispatcher;
-    }
+contract UserStorage is IUserStorage, BaseResolver {
+    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     mapping(address => bool) userMapping;
 

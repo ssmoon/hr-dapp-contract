@@ -2,8 +2,10 @@
 pragma solidity 0.8.17;
 
 import "./Owned.sol";
+import "../interface/IDispatcher.sol";
+import "../consts/ContractName.sol";
 
-contract Dispatcher is Owned {
+contract Dispatcher is Owned, IDispatcher {
     mapping(bytes32 => address) public repository;
 
     constructor(address _owner) Owned(_owner) {}

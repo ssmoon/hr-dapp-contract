@@ -10,9 +10,10 @@ import "../interface/ICertificateService.sol";
 import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
 import "../interface/IFacade.sol";
+import "../infra/BaseResolver.sol";
 
 contract Facade is IFacade, RestrictedUser, Owned {
-    constructor(Dispatcher _dispatcher, address _owner)
+    constructor(address _dispatcher, address _owner)
         RestrictedUser(_dispatcher)
         Owned(_owner)
     {}

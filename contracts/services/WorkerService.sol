@@ -5,14 +5,10 @@ import "../consts/ContractName.sol";
 import "../consts/BusinessConsts.sol";
 import "../interface/IWorkerStorage.sol";
 import "../interface/IWorkerService.sol";
-import "../infra/Dispatcher.sol";
+import "../infra/BaseResolver.sol";
 
-contract WorkerService is ContractName, IWorkerService, BusinessConsts {
-    Dispatcher public dispatcher;
-
-    constructor(Dispatcher _dispatcher) {
-        dispatcher = _dispatcher;
-    }
+contract WorkerService is ContractName, IWorkerService, BusinessConsts, BaseResolver {
+    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     function createWorker(WorkerDefine.Worker calldata worker) external {
         require(

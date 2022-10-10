@@ -2,17 +2,13 @@
 pragma solidity 0.8.17;
 
 import "../consts/ContractName.sol";
-import "../infra/Dispatcher.sol";
+import "../infra/BaseResolver.sol";
 import "../interface/ICertificateService.sol";
 import "../interface/ICertificateStorage.sol";
 import "../interface/IWorkerStorage.sol";
 
-contract CertificateService is ContractName, ICertificateService {
-    Dispatcher public dispatcher;
-
-    constructor(Dispatcher _dispatcher) {
-        dispatcher = _dispatcher;
-    }
+contract CertificateService is ContractName, ICertificateService, BaseResolver {
+    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     function createCertificate(
         bytes18 securityNo,

@@ -4,13 +4,12 @@ pragma solidity 0.8.17;
 import "../infra/Dispatcher.sol";
 import "../consts/ContractName.sol";
 import "../interface/IUserStorage.sol";
+import "../infra/BaseResolver.sol";
 
-contract RestrictedUser is ContractName {
-    Dispatcher public dispatcher;
-
-    constructor(Dispatcher _dispatcher) {
-        dispatcher = _dispatcher;
-    }
+contract RestrictedUser is ContractName, BaseResolver {
+    constructor(address _dispatcher)
+        BaseResolver(_dispatcher)
+    {}
 
     modifier restricted() {
         IUserStorage userStorage = IUserStorage(

@@ -1,19 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-import "../interface/ICareerService.sol";
-import "../infra/Dispatcher.sol";
+import "../infra/BaseResolver.sol";
 import "../consts/ContractName.sol";
 import "../consts/BusinessConsts.sol";
 import "../interface/ICareerStorage.sol";
 import "../interface/IWorkerStorage.sol";
+import "../interface/ICareerService.sol";
 
-contract CareerService is ICareerService, ContractName, BusinessConsts {
-    Dispatcher public dispatcher;
-
-    constructor(Dispatcher _dispatcher) {
-        dispatcher = _dispatcher;
-    }
+contract CareerService is ICareerService, ContractName, BusinessConsts, BaseResolver {
+    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     function addWorkExperience(
         bytes18 securityNo,
