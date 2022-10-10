@@ -4,24 +4,18 @@ pragma solidity 0.8.17;
 import "./Dispatcher.sol";
 import "./RestrictedUser.sol";
 import "./Owned.sol";
-import "../consts/ContractName.sol";
 import "../interface/IUserService.sol";
-import "../interface/IGetContractName.sol";
 import "../interface/ICertificateService.sol";
 import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
 import "../interface/IFacade.sol";
 import "../infra/BaseResolver.sol";
 
-contract Facade is IFacade, RestrictedUser, Owned, IGetContractName {
+contract Facade is IFacade, RestrictedUser, Owned {
     constructor(address _dispatcher, address _owner)
         RestrictedUser(_dispatcher)
         Owned(_owner)
     {}
-
-    function getContractName() external pure override returns (bytes32) {
-        return ContractName_Facade;
-    }
 
     function createCertificate(
         bytes18 securityNo,

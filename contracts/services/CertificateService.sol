@@ -6,19 +6,9 @@ import "../infra/BaseResolver.sol";
 import "../interface/ICertificateService.sol";
 import "../interface/ICertificateStorage.sol";
 import "../interface/IWorkerStorage.sol";
-import "../interface/IGetContractName.sol";
 
-contract CertificateService is
-    ContractName,
-    ICertificateService,
-    BaseResolver,
-    IGetContractName
-{
+contract CertificateService is ContractName, ICertificateService, BaseResolver {
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
-
-    function getContractName() external pure returns (bytes32) {
-        return ContractName_CertificateService;
-    }
 
     function createCertificate(
         bytes18 securityNo,

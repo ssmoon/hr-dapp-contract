@@ -4,20 +4,9 @@ pragma solidity 0.8.17;
 import "../models/CertificateDefine.sol";
 import "../infra/BaseResolver.sol";
 import "../interface/ICertificateStorage.sol";
-import "../interface/IGetContractName.sol";
-import "../consts/ContractName.sol";
 
-contract CertificateStorage is
-    ICertificateStorage,
-    BaseResolver,
-    ContractName,
-    IGetContractName
-{
+contract CertificateStorage is ICertificateStorage, BaseResolver {
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
-
-    function getContractName() external pure returns (bytes32) {
-        return ContractName_CertificateStorage;
-    }
 
     mapping(bytes18 => CertificateDefine.Certificate[]) certificateMap;
 
