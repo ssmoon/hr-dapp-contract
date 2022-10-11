@@ -2,15 +2,11 @@
 pragma solidity 0.8.17;
 
 import "../models/CertificateDefine.sol";
-import "../infra/Dispatcher.sol";
+import "../infra/BaseResolver.sol";
 import "../interface/ICertificateStorage.sol";
 
-contract CertificateStorage is ICertificateStorage {
-    Dispatcher public dispatcher;
-
-    constructor(Dispatcher _dispatcher) {
-        dispatcher = _dispatcher;
-    }
+contract CertificateStorage is ICertificateStorage, BaseResolver {
+    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     mapping(bytes18 => CertificateDefine.Certificate[]) certificateMap;
 

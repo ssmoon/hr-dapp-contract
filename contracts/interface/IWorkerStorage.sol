@@ -11,4 +11,6 @@ interface IWorkerStorage {
         external
         view
         returns (WorkerDefine.Worker memory);
+
+    function checkWorkerExist(bytes18 securityNo) external view returns (bool);
 }

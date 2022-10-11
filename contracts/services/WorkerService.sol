@@ -5,14 +5,15 @@ import "../consts/ContractName.sol";
 import "../consts/BusinessConsts.sol";
 import "../interface/IWorkerStorage.sol";
 import "../interface/IWorkerService.sol";
-import "../infra/Dispatcher.sol";
+import "../infra/BaseResolver.sol";
 
-contract CertificateService is ContractName, IWorkerStorage, BusinessConsts {
-    Dispatcher public dispatcher;
-
-    constructor(Dispatcher _dispatcher) {
-        dispatcher = _dispatcher;
-    }
+contract WorkerService is
+    ContractName,
+    IWorkerService,
+    BusinessConsts,
+    BaseResolver
+{
+    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     function createWorker(WorkerDefine.Worker calldata worker) external {
         require(
@@ -27,9 +28,8 @@ contract CertificateService is ContractName, IWorkerStorage, BusinessConsts {
             )
         );
 
-        WorkerDefine.Worker memory existedWorker = workerStorage
-            .getWorkerBySecurityNo(worker.securityNo);
-        require(!existedWorker.isValue, "this securityNo has already existed");
+        bool exist = workerStorage.checkWorkerExist(worker.securityNo);
+        require(!exist, "this securityNo already exists");
         workerStorage.createWorker(worker);
     }
 

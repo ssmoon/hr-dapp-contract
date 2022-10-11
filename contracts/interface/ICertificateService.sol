@@ -5,5 +5,13 @@ pragma experimental ABIEncoderV2;
 import "../models/CertificateDefine.sol";
 
 interface ICertificateService {
+    function createCertificate(
+        bytes18 securityNo,
+        CertificateDefine.Certificate calldata certifcate
+    ) external;
 
+    function getCertificateBySecurityNo(bytes18 securityNo)
+        external
+        view
+        returns (CertificateDefine.Certificate[] memory);
 }

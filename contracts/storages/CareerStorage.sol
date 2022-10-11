@@ -3,14 +3,11 @@ pragma solidity 0.8.17;
 
 import "../models/WorkExperienceDefine.sol";
 import "../infra/Dispatcher.sol";
+import "../infra/BaseResolver.sol";
 import "../interface/ICareerStorage.sol";
 
-contract CareerStorage is ICareerStorage {
-    Dispatcher public dispatcher;
-
-    constructor(Dispatcher _dispatcher) {
-        dispatcher = _dispatcher;
-    }
+contract CareerStorage is ICareerStorage, BaseResolver {
+    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     mapping(bytes18 => WorkExperienceDefine.WorkExperience[]) workerExperienceMap;
 
