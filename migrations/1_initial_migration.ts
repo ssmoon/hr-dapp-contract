@@ -17,16 +17,18 @@ const CertificateStorageContract = artifacts.require('CertificateStorage')
 const migration: Truffle.Migration = async function (deployer, _, accounts) {
   const account = accounts[0];
 
+  console.log("deploying start with account: " + account);
+
   await deployer.deploy(ProxyContract)
   const ProxyDeployed = await ProxyContract.deployed();
 
   // contract discovery center
-  await deployer.deploy(DispatcherContract, ProxyDeployed.address);
+  await deployer.deploy(DispatcherContract, account);
   const DispatcherDeployed = await DispatcherContract.deployed();
 
   // proxy delegate impl
   await deployer.deploy(FacadeContract, DispatcherDeployed.address, account);
-  await DispatcherDeployed.importAddress(web3.utils.fromAscii("Facade"), FacadeContract.address)
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("Facade"), FacadeContract.address, { from: account });
 
   // set current proxyed impl
   await ProxyDeployed.setImplementation(FacadeContract.address);
@@ -34,28 +36,28 @@ const migration: Truffle.Migration = async function (deployer, _, accounts) {
   // deploy and register all other contracts
 
   await deployer.deploy(CareerServiceContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress("CareerService", CareerServiceContract.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("CareerService"), CareerServiceContract.address, { from: account });
 
   await deployer.deploy(CareerStorageContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress("CareerStorage", CareerStorageContract.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("CareerStorage"), CareerStorageContract.address, { from: account });
 
   await deployer.deploy(UserServiceContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress("UserService", UserServiceContract.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserService"), UserServiceContract.address, { from: account });
 
   await deployer.deploy(UserStorageContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress("UserStorage", UserStorageContract.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserStorage"), UserStorageContract.address, { from: account });
 
   await deployer.deploy(WorkerServiceContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress("WorkerService", WorkerServiceContract.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("WorkerService"), WorkerServiceContract.address, { from: account });
 
   await deployer.deploy(WorkerStorageContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress("WorkerStorage", WorkerStorageContract.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("WorkerStorage"), WorkerStorageContract.address, { from: account });
 
   await deployer.deploy(CertificateServiceContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress("CertificateService", CertificateServiceContract.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("CertificateService"), CertificateServiceContract.address, { from: account });
 
   await deployer.deploy(CertificateStorageContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress("CertificateStorage", CertificateStorageContract.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("CertificateStorage"), CertificateStorageContract.address, { from: account });
 }
 
 module.exports = migration
