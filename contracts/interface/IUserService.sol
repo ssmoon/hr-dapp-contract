@@ -5,4 +5,6 @@ interface IUserService {
     function createUser(address addr) external;
 
     function removeUser(address addr) external;
+
+    function checkUserExist(address addr) external view returns (bool);
 }

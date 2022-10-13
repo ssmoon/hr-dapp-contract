@@ -4,8 +4,8 @@ pragma solidity 0.8.17;
 contract Proxy {
     address private implementation;
 
-    function setImplementation(address storageImplementation) external {
-        implementation = storageImplementation;
+    function setImplementation(address _implementation) external {
+        implementation = _implementation;
     }
 
     fallback() external {

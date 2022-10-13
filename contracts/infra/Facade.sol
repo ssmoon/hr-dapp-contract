@@ -8,10 +8,9 @@ import "../interface/IUserService.sol";
 import "../interface/ICertificateService.sol";
 import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
-import "../interface/IFacade.sol";
 import "../infra/BaseResolver.sol";
 
-contract Facade is IFacade, RestrictedUser, Owned {
+contract Facade is RestrictedUser, Owned {
     constructor(address _dispatcher, address _owner)
         RestrictedUser(_dispatcher)
         Owned(_owner)
@@ -128,5 +127,23 @@ contract Facade is IFacade, RestrictedUser, Owned {
             )
         );
         userService.removeUser(addr);
+    }
+
+    function checkUserExist(address addr) external view returns (bool) {
+        IUserService userService = IUserService(
+            dispatcher.getExistedAddress(
+                ContractName_UserService,
+                "UserService not Found"
+            )
+        );
+        return userService.checkUserExist(addr);
+    }
+
+    function ping() external pure returns (bytes32) {
+        return "pong";
+    }
+
+    function pingByUser() external view restricted returns (bytes32) {
+        return "pong";
     }
 }

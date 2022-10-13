@@ -33,4 +33,14 @@ contract UserService is ContractName, IUserService, BaseResolver {
         require(exist, "User addr not found");
         userStorage.removeUser(addr);
     }
+
+    function checkUserExist(address addr) external view returns (bool) {
+        IUserStorage userStorage = IUserStorage(
+            dispatcher.getExistedAddress(
+                ContractName_UserStorage,
+                "UserStorage not Found"
+            )
+        );
+        return userStorage.checkUserExist(addr);
+    }
 }
