@@ -6,9 +6,13 @@ import "../consts/ContractName.sol";
 import "../interface/IUserStorage.sol";
 import "../infra/BaseResolver.sol";
 import "../interface/IGetContractName.sol";
+import "../infra/Owned.sol";
 
-contract RestrictedUser is ContractName, BaseResolver {
-    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
+contract RestrictedUser is ContractName, BaseResolver, Owned {
+    constructor(address _dispatcher, address _owner)
+        BaseResolver(_dispatcher)
+        Owned(_owner)
+    {}
 
     modifier restricted() {
         IUserStorage userStorage = IUserStorage(
@@ -17,8 +21,9 @@ contract RestrictedUser is ContractName, BaseResolver {
                 "UserStorage not Found"
             )
         );
+        bool isOwner1 = isOwner(msg.sender);
         require(
-            userStorage.checkUserExist(msg.sender),
+            userStorage.checkUserExist(msg.sender) || isOwner1,
             "Only the restricted user may perform this action"
         );
         _;

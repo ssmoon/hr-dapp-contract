@@ -17,7 +17,7 @@ const CertificateStorageContract = artifacts.require('CertificateStorage')
 const migration: Truffle.Migration = async function (deployer, _, accounts) {
   const account = accounts[0];
 
-  console.log("deploying start with account: " + account);
+  console.log("deploying start with owner account: " + account);
 
   await deployer.deploy(ProxyContract)
   const ProxyDeployed = await ProxyContract.deployed();
@@ -62,4 +62,4 @@ const migration: Truffle.Migration = async function (deployer, _, accounts) {
 
 module.exports = migration
 
-export { }
+export {}

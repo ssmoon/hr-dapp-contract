@@ -3,17 +3,15 @@ pragma solidity 0.8.17;
 
 import "./Dispatcher.sol";
 import "./RestrictedUser.sol";
-import "./Owned.sol";
 import "../interface/IUserService.sol";
 import "../interface/ICertificateService.sol";
 import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
 import "../infra/BaseResolver.sol";
 
-contract Facade is RestrictedUser, Owned {
+contract Facade is RestrictedUser {
     constructor(address _dispatcher, address _owner)
-        RestrictedUser(_dispatcher)
-        Owned(_owner)
+        RestrictedUser(_dispatcher, _owner)
     {}
 
     function createCertificate(
@@ -143,7 +141,7 @@ contract Facade is RestrictedUser, Owned {
         return "pong";
     }
 
-    function pingByUser() external view restricted returns (bytes32) {
+    function pingByUser() external restricted returns (bytes32) {
         return "pong";
     }
 }

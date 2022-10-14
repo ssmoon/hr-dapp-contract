@@ -11,3 +11,5 @@ cache
 
 # macOS
 .DS_Store
+
+.vscode

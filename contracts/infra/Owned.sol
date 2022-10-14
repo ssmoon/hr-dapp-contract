@@ -12,6 +12,10 @@ contract Owned {
         emit OwnerChanged(address(0), _owner);
     }
 
+    function isOwner(address _owner) internal view returns(bool) {
+        return _owner == owner;
+    }
+
     function nominateNewOwner(address _owner) external onlyOwner {
         nominatedOwner = _owner;
         emit OwnerNominated(_owner);
@@ -28,6 +32,7 @@ contract Owned {
     }
 
     modifier onlyOwner() {
+        emit checkResitricted(msg.sender, owner);
         require(
             msg.sender == owner,
             "Only the contract owner may perform this action"
@@ -35,6 +40,8 @@ contract Owned {
         _;
     }
 
+
+    event checkResitricted(address addrSender, address addrOwner);
     event OwnerNominated(address newOwner);
     event OwnerChanged(address oldOwner, address newOwner);
 }
