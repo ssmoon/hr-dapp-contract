@@ -5,16 +5,11 @@ import "../consts/ContractName.sol";
 import "../consts/BusinessConsts.sol";
 import "../interface/IUserStorage.sol";
 import "../interface/IUserService.sol";
-import "../infra/RestrictedUser.sol";
+import "../infra/BaseResolver.sol";
 
-contract UserService is ContractName, IUserService, RestrictedUser {
+contract UserService is ContractName, IUserService, BaseResolver {
     constructor(address _dispatcher, address _owner)
-        RestrictedUser(_dispatcher, _owner)
     {}
-
-    function getOwner() external view returns (bytes32) {
-        return "abcde";
-    }
 
     function createUser(address addr) external {
         IUserStorage userStorage = IUserStorage(
@@ -28,7 +23,7 @@ contract UserService is ContractName, IUserService, RestrictedUser {
         userStorage.createUser(addr);
     }
 
-    function removeUser(address addr) external onlyOwner {
+    function removeUser(address addr) external {
         IUserStorage userStorage = IUserStorage(
             dispatcher.getExistedAddress(
                 ContractName_UserStorage,

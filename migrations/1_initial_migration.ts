@@ -22,9 +22,6 @@ const migration: Truffle.Migration = async function (deployer, network, accounts
 
   console.log("deploying start with owner account: " + account);
 
-  // await deployer.deploy(ProxyContract)
-  // const ProxyDeployed = await ProxyContract.deployed();
-
   // contract discovery center
   await deployer.deploy(DispatcherContract, account);
   const DispatcherDeployed = await DispatcherContract.deployed();
@@ -48,15 +45,6 @@ const migration: Truffle.Migration = async function (deployer, network, accounts
 
   };
   fs.writeFileSync('output/deployed.json', JSON.stringify(deployResult, null, 4));
-
-  // proxy delegate impl
-  // await deployer.deploy(FacadeContract);
-  // const facadeDeployed = await FacadeContract.deployed();
-  // facadeDeployed.setDispatcher(DispatcherDeployed.address);
-  // set current proxyed impl
-  // await ProxyDeployed.setImplementation(FacadeContract.address);
-
-  // deploy and register all other contracts
 
   await deployer.deploy(UserServiceContract, DispatcherDeployed.address, account);
   await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserService"), UserServiceContract.address, { from: account });

@@ -2,6 +2,8 @@
 pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./Dispatcher.sol";
 import "../interface/IDispatcher.sol";
@@ -12,7 +14,8 @@ import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
 import "../infra/BaseResolver.sol";
 
-contract Facade is ContractName, Initializable {
+contract Facade is ContractName, Initializable, Ownable, AccessControl {
+    bytes32 public constant SUPERVISOR_ROLE = keccak256("SUPERVISOR_ROLE");
     IDispatcher internal dispatcher;
 
     function initialize(address _dispatcher) public initializer {
@@ -22,7 +25,7 @@ contract Facade is ContractName, Initializable {
     function createCertificate(
         bytes18 securityNo,
         CertificateDefine.Certificate calldata certifcate
-    ) external {
+    ) external onlyRole(SUPERVISOR_ROLE) {
         ICertificateService certificateService = ICertificateService(
             dispatcher.getExistedAddress(
                 ContractName_CertificateService,
@@ -49,7 +52,7 @@ contract Facade is ContractName, Initializable {
     function addWorkExperience(
         bytes18 securityNo,
         WorkExperienceDefine.WorkExperience calldata workExperience
-    ) external {
+    ) external onlyRole(SUPERVISOR_ROLE) {
         ICareerService careerService = ICareerService(
             dispatcher.getExistedAddress(
                 ContractName_CareerService,
@@ -59,7 +62,10 @@ contract Facade is ContractName, Initializable {
         careerService.addWorkExperience(securityNo, workExperience);
     }
 
-    function finishLastCareer(bytes18 securityNo, uint16 endYear) external {
+    function finishLastCareer(bytes18 securityNo, uint16 endYear)
+        external
+        onlyRole(SUPERVISOR_ROLE)
+    {
         ICareerService careerService = ICareerService(
             dispatcher.getExistedAddress(
                 ContractName_CareerService,
@@ -82,7 +88,10 @@ contract Facade is ContractName, Initializable {
         return careerService.getWorkExperienceBySecurityNo(securityNo);
     }
 
-    function createWorker(WorkerDefine.Worker calldata worker) external {
+    function createWorker(WorkerDefine.Worker calldata worker)
+        external
+        onlyRole(SUPERVISOR_ROLE)
+    {
         IWorkerService workerService = IWorkerService(
             dispatcher.getExistedAddress(
                 ContractName_WorkerService,
@@ -106,7 +115,7 @@ contract Facade is ContractName, Initializable {
         return workerService.getWorkerBySecurityNo(securityNo);
     }
 
-    function createUser(address addr) external {
+    function createUser(address addr) external onlyRole(SUPERVISOR_ROLE) {
         IUserService userService = IUserService(
             dispatcher.getExistedAddress(
                 ContractName_UserService,
@@ -116,7 +125,7 @@ contract Facade is ContractName, Initializable {
         userService.createUser(addr);
     }
 
-    function removeUser(address addr) external {
+    function removeUser(address addr) external onlyRole(SUPERVISOR_ROLE) {
         IUserService userService = IUserService(
             dispatcher.getExistedAddress(
                 ContractName_UserService,
@@ -152,6 +161,7 @@ contract Facade is ContractName, Initializable {
 
     function pong() external view returns (address) {
         // return dispatcher.getString();
-        return dispatcher.getExistedAddress(ContractName_UserService, "not exist");
+        return
+            dispatcher.getExistedAddress(ContractName_UserService, "not exist");
     }
 }
