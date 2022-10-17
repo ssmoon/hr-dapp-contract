@@ -16,7 +16,7 @@ contract("restricted user management, including create, remove and its access re
   let proxyAddr: string;
   before(() => {
     const deployedConfig = JSON.parse(fs.readFileSync("output/deployed.json", 'utf-8'));
-    proxyAddr = deployedConfig.proxyed.proxy;
+    proxyAddr = deployedConfig.proxyedAddr.proxy;
   })
 
   it("test network", async () => {
