@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
 import "./Dispatcher.sol";
 import "../interface/IDispatcher.sol";
 import "../consts/ContractName.sol";
@@ -10,10 +12,10 @@ import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
 import "../infra/BaseResolver.sol";
 
-contract Facade is ContractName {
+contract Facade is ContractName, Initializable {
     IDispatcher internal dispatcher;
 
-    function setDispatcher(address _dispatcher) external {
+    function initialize(address _dispatcher) public initializer {
         dispatcher = IDispatcher(_dispatcher);
     }
 
@@ -148,8 +150,8 @@ contract Facade is ContractName {
         return ContractName_UserService;
     }
 
-    function pong() external view returns (string memory) {
-        return dispatcher.getString();
-        //return dispatcher.getExistedAddress(ContractName_UserService, "not exist");
+    function pong() external view returns (address) {
+        // return dispatcher.getString();
+        return dispatcher.getExistedAddress(ContractName_UserService, "not exist");
     }
 }

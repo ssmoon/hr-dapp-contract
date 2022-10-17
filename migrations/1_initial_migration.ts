@@ -1,4 +1,5 @@
-const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
+const { deployProxy, upgradeProxy, erc1967 } = require('@openzeppelin/truffle-upgrades');
+var fs = require('fs');
 
 const ProxyContract = artifacts.require('Proxy')
 const DispatcherContract = artifacts.require('Dispatcher')
@@ -16,24 +17,42 @@ const WorkerStorageContract = artifacts.require('WorkerStorage')
 const CertificateServiceContract = artifacts.require('CertificateService')
 const CertificateStorageContract = artifacts.require('CertificateStorage')
 
-const migration: Truffle.Migration = async function (deployer, _, accounts) {
+const migration: Truffle.Migration = async function (deployer, network, accounts) {
   const account = accounts[0];
 
   console.log("deploying start with owner account: " + account);
 
-  await deployer.deploy(ProxyContract)
-  const ProxyDeployed = await ProxyContract.deployed();
+  // await deployer.deploy(ProxyContract)
+  // const ProxyDeployed = await ProxyContract.deployed();
 
   // contract discovery center
   await deployer.deploy(DispatcherContract, account);
   const DispatcherDeployed = await DispatcherContract.deployed();
 
+  const proxiedFacade = await deployProxy(FacadeContract, [DispatcherDeployed.address], { deployer, initializer: 'initialize' });
+  const adminAdress = (await erc1967.getAdminAddress(proxiedFacade.address));
+  const implAddress = (await erc1967.getImplementationAddress(proxiedFacade.address));
+  console.log("proxy's address is: " + proxiedFacade.address);
+  console.log("proxy's admin address is: " + adminAdress);
+  console.log("proxy's implementation address is: " + implAddress);
+
+  const deployResult = {
+    owner: account,
+    proxyed: {
+      proxy: proxiedFacade.address,
+      admin: adminAdress,
+      implementation: implAddress
+    },
+    network: network
+  };
+  fs.writeFileSync('output/deployed.json', JSON.stringify(deployResult, null, 4));
+
   // proxy delegate impl
-  await deployer.deploy(FacadeContract);
-  const facadeDeployed = await FacadeContract.deployed();
-  facadeDeployed.setDispatcher(DispatcherDeployed.address);
+  // await deployer.deploy(FacadeContract);
+  // const facadeDeployed = await FacadeContract.deployed();
+  // facadeDeployed.setDispatcher(DispatcherDeployed.address);
   // set current proxyed impl
-  await ProxyDeployed.setImplementation(FacadeContract.address);
+  // await ProxyDeployed.setImplementation(FacadeContract.address);
 
   // deploy and register all other contracts
 
@@ -64,4 +83,4 @@ const migration: Truffle.Migration = async function (deployer, _, accounts) {
 
 module.exports = migration
 
-export {}
+export { }

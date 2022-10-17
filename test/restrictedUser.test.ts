@@ -1,16 +1,25 @@
-const ProxyContract = artifacts.require('Proxy')
-import Web3 from 'web3';
-import { setupLoader } from '@openzeppelin/contract-loader';
-// import Web3, { Web3.utils } from 'web3';
-import HDWalletProvider from '@truffle/hdwallet-provider';
-import { FacadeInstance } from '../types/truffle-contracts/Facade';
-const truffleAssert = require('truffle-assertions');
-const mnemonic = "market print rigid attract satoshi choose genuine setup minute artist pottery domain";
-const provider = new HDWalletProvider(mnemonic, "HTTP://127.0.0.1:8545");
+// const ProxyContract = artifacts.require('Proxy')
+// import Web3 from 'web3';
+// import { setupLoader } from '@openzeppelin/contract-loader';
+// // import Web3, { Web3.utils } from 'web3';
+// import HDWalletProvider from '@truffle/hdwallet-provider';
+// import { FacadeInstance } from '../types/truffle-contracts/Facade';
+// const truffleAssert = require('truffle-assertions');
+// const mnemonic = "market print rigid attract satoshi choose genuine setup minute artist pottery domain";
+// const provider = new HDWalletProvider(mnemonic, "HTTP://127.0.0.1:8545");
 
-const loader = setupLoader({ provider: new Web3(provider) }).web3;
+// const loader = setupLoader({ provider: new Web3(provider) }).web3;
 const FacadeContract = artifacts.require('Facade')
+contract("restricted user management, including create, remove and its access restriction", accounts => {
+  it("test network", async () => {
+    const existing = await FacadeContract.at("0x4CD657c6420Bd67879D202abe3506F22747F250B");
+    const result = await existing.pong();
+    console.log(result);
+  })
+})
 
+
+/*
 contract("restricted user management, including create, remove and its access restriction", accounts => {
   let facadeInstance: any;
   // set owner addr, always the first account in accounts, consistent with the migration file
@@ -57,3 +66,4 @@ contract("restricted user management, including create, remove and its access re
   //   await truffleAssert.reverts(facadeInstance.methods.pingByUser().call({ from: unauthenticatedAccount }));
   // });
 })
+*/
