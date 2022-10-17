@@ -5,11 +5,11 @@ import { setupLoader } from '@openzeppelin/contract-loader';
 import HDWalletProvider from '@truffle/hdwallet-provider';
 import { FacadeInstance } from '../types/truffle-contracts/Facade';
 const truffleAssert = require('truffle-assertions');
-const mnemonic = "east luggage hire engine below transfer absent control believe predict page reform";
+const mnemonic = "market print rigid attract satoshi choose genuine setup minute artist pottery domain";
 const provider = new HDWalletProvider(mnemonic, "HTTP://127.0.0.1:8545");
 
 const loader = setupLoader({ provider: new Web3(provider) }).web3;
-// const FacadeContract = artifacts.require('Facade')
+const FacadeContract = artifacts.require('Facade')
 
 contract("restricted user management, including create, remove and its access restriction", accounts => {
   let facadeInstance: any;
@@ -24,16 +24,22 @@ contract("restricted user management, including create, remove and its access re
   });
 
   it("can visit facade through proxy fallback", async () => {
+    const facadeDeployed = await FacadeContract.deployed();
+    const r = await facadeDeployed.pong();
+    console.log("1 call result is: " + r)
+    //await facadeInstance.methods.createUser(restrictedAddr).call({ from: ownerAddr });
+  });
+
+  it("ping", async () => {
     const result = await facadeInstance.methods.ping().call();
+    console.log("2 call result is: " + result)
     expect(Web3.utils.hexToUtf8(result)).to.equal("pong")
   });
 
   it("owner could visit restricted function", async () => {
-    // const facade = await FacadeContract.deployed();
-    // const r = await facade.pingByUser.call({ from: unauthenticatedAccount })
-    // const ownerResult = await facadeInstance.methods.pingByUser().call({ from: ownerAddr });
-    // console.log(ownerResult);
-    // expect(Web3.utils.hexToUtf8(r)).to.equal("pong")
+    const result = await facadeInstance.methods.pong().call();
+    console.log("3 call result is: " + result)
+    expect(Web3.utils.hexToUtf8(result)).to.equal("pong")
   });
 
   // it("add user to restircted list, then it can visit restricted function", async () => {

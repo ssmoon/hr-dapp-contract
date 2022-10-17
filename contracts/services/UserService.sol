@@ -5,10 +5,16 @@ import "../consts/ContractName.sol";
 import "../consts/BusinessConsts.sol";
 import "../interface/IUserStorage.sol";
 import "../interface/IUserService.sol";
-import "../infra/BaseResolver.sol";
+import "../infra/RestrictedUser.sol";
 
-contract UserService is ContractName, IUserService, BaseResolver {
-    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
+contract UserService is ContractName, IUserService, RestrictedUser {
+    constructor(address _dispatcher, address _owner)
+        RestrictedUser(_dispatcher, _owner)
+    {}
+
+    function getOwner() external view returns (bytes32) {
+        return "abcde";
+    }
 
     function createUser(address addr) external {
         IUserStorage userStorage = IUserStorage(
@@ -17,12 +23,12 @@ contract UserService is ContractName, IUserService, BaseResolver {
                 "UserStorage not Found"
             )
         );
-        bool exist = userStorage.checkUserExist(addr);
-        require(!exist, "User addr already exists");
+        // bool exist = userStorage.checkUserExist(addr);
+        // require(!exist, "User addr already exists");
         userStorage.createUser(addr);
     }
 
-    function removeUser(address addr) external {
+    function removeUser(address addr) external onlyOwner {
         IUserStorage userStorage = IUserStorage(
             dispatcher.getExistedAddress(
                 ContractName_UserStorage,

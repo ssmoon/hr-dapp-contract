@@ -1,3 +1,5 @@
+const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
+
 const ProxyContract = artifacts.require('Proxy')
 const DispatcherContract = artifacts.require('Dispatcher')
 const FacadeContract = artifacts.require('Facade')
@@ -27,25 +29,25 @@ const migration: Truffle.Migration = async function (deployer, _, accounts) {
   const DispatcherDeployed = await DispatcherContract.deployed();
 
   // proxy delegate impl
-  await deployer.deploy(FacadeContract, DispatcherDeployed.address, account);
-  await DispatcherDeployed.importAddress(web3.utils.fromAscii("Facade"), FacadeContract.address, { from: account });
-
+  await deployer.deploy(FacadeContract);
+  const facadeDeployed = await FacadeContract.deployed();
+  facadeDeployed.setDispatcher(DispatcherDeployed.address);
   // set current proxyed impl
   await ProxyDeployed.setImplementation(FacadeContract.address);
 
   // deploy and register all other contracts
+
+  await deployer.deploy(UserServiceContract, DispatcherDeployed.address, account);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserService"), UserServiceContract.address, { from: account });
+
+  await deployer.deploy(UserStorageContract, DispatcherDeployed.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserStorage"), UserStorageContract.address, { from: account });
 
   await deployer.deploy(CareerServiceContract, DispatcherDeployed.address);
   await DispatcherDeployed.importAddress(web3.utils.fromAscii("CareerService"), CareerServiceContract.address, { from: account });
 
   await deployer.deploy(CareerStorageContract, DispatcherDeployed.address);
   await DispatcherDeployed.importAddress(web3.utils.fromAscii("CareerStorage"), CareerStorageContract.address, { from: account });
-
-  await deployer.deploy(UserServiceContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserService"), UserServiceContract.address, { from: account });
-
-  await deployer.deploy(UserStorageContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserStorage"), UserStorageContract.address, { from: account });
 
   await deployer.deploy(WorkerServiceContract, DispatcherDeployed.address);
   await DispatcherDeployed.importAddress(web3.utils.fromAscii("WorkerService"), WorkerServiceContract.address, { from: account });

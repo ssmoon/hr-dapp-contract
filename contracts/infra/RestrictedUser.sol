@@ -21,9 +21,8 @@ contract RestrictedUser is ContractName, BaseResolver, Owned {
                 "UserStorage not Found"
             )
         );
-        bool isOwner1 = isOwner(msg.sender);
         require(
-            userStorage.checkUserExist(msg.sender) || isOwner1,
+            userStorage.checkUserExist(msg.sender) || isOwner(msg.sender),
             "Only the restricted user may perform this action"
         );
         _;

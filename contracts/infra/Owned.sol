@@ -7,12 +7,16 @@ contract Owned {
     address public nominatedOwner;
 
     constructor(address _owner) {
+        setOwner(_owner);
+    }
+
+    function setOwner(address _owner) internal {
         require(_owner != address(0), "Owner address cannot be 0");
         owner = _owner;
         emit OwnerChanged(address(0), _owner);
     }
 
-    function isOwner(address _owner) internal view returns(bool) {
+    function isOwner(address _owner) internal view returns (bool) {
         return _owner == owner;
     }
 
@@ -39,7 +43,6 @@ contract Owned {
         );
         _;
     }
-
 
     event checkResitricted(address addrSender, address addrOwner);
     event OwnerNominated(address newOwner);

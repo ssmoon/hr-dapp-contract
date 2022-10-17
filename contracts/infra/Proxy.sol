@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-contract Proxy {
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+
+contract Proxy is ERC721Upgradeable {
+    function initialize() public initializer {
+        __ERC721_init("MyCollectible", "MCO");
+    }
+
     address private implementation;
 
     function setImplementation(address _implementation) external {

@@ -15,4 +15,6 @@ interface IDispatcher {
         external
         view
         returns (address);
+
+    function getString() external pure returns (string memory);
 }

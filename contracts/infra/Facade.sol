@@ -2,22 +2,25 @@
 pragma solidity 0.8.17;
 
 import "./Dispatcher.sol";
-import "./RestrictedUser.sol";
+import "../interface/IDispatcher.sol";
+import "../consts/ContractName.sol";
 import "../interface/IUserService.sol";
 import "../interface/ICertificateService.sol";
 import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
 import "../infra/BaseResolver.sol";
 
-contract Facade is RestrictedUser {
-    constructor(address _dispatcher, address _owner)
-        RestrictedUser(_dispatcher, _owner)
-    {}
+contract Facade is ContractName {
+    IDispatcher internal dispatcher;
+
+    function setDispatcher(address _dispatcher) external {
+        dispatcher = IDispatcher(_dispatcher);
+    }
 
     function createCertificate(
         bytes18 securityNo,
         CertificateDefine.Certificate calldata certifcate
-    ) external restricted {
+    ) external {
         ICertificateService certificateService = ICertificateService(
             dispatcher.getExistedAddress(
                 ContractName_CertificateService,
@@ -44,7 +47,7 @@ contract Facade is RestrictedUser {
     function addWorkExperience(
         bytes18 securityNo,
         WorkExperienceDefine.WorkExperience calldata workExperience
-    ) external restricted {
+    ) external {
         ICareerService careerService = ICareerService(
             dispatcher.getExistedAddress(
                 ContractName_CareerService,
@@ -54,10 +57,7 @@ contract Facade is RestrictedUser {
         careerService.addWorkExperience(securityNo, workExperience);
     }
 
-    function finishLastCareer(bytes18 securityNo, uint16 endYear)
-        external
-        restricted
-    {
+    function finishLastCareer(bytes18 securityNo, uint16 endYear) external {
         ICareerService careerService = ICareerService(
             dispatcher.getExistedAddress(
                 ContractName_CareerService,
@@ -80,10 +80,7 @@ contract Facade is RestrictedUser {
         return careerService.getWorkExperienceBySecurityNo(securityNo);
     }
 
-    function createWorker(WorkerDefine.Worker calldata worker)
-        external
-        restricted
-    {
+    function createWorker(WorkerDefine.Worker calldata worker) external {
         IWorkerService workerService = IWorkerService(
             dispatcher.getExistedAddress(
                 ContractName_WorkerService,
@@ -107,7 +104,7 @@ contract Facade is RestrictedUser {
         return workerService.getWorkerBySecurityNo(securityNo);
     }
 
-    function createUser(address addr) external onlyOwner {
+    function createUser(address addr) external {
         IUserService userService = IUserService(
             dispatcher.getExistedAddress(
                 ContractName_UserService,
@@ -117,7 +114,7 @@ contract Facade is RestrictedUser {
         userService.createUser(addr);
     }
 
-    function removeUser(address addr) external onlyOwner {
+    function removeUser(address addr) external {
         IUserService userService = IUserService(
             dispatcher.getExistedAddress(
                 ContractName_UserService,
@@ -137,11 +134,22 @@ contract Facade is RestrictedUser {
         return userService.checkUserExist(addr);
     }
 
-    function ping() external pure returns (bytes32) {
-        return "pong";
+    function getOwner() external view returns (bytes32) {
+        IUserService userService = IUserService(
+            dispatcher.getExistedAddress(
+                ContractName_UserService,
+                "UserService not Found"
+            )
+        );
+        return userService.getOwner();
     }
 
-    function pingByUser() external restricted returns (bytes32) {
-        return "pong";
+    function ping() external pure returns (bytes32) {
+        return ContractName_UserService;
+    }
+
+    function pong() external view returns (string memory) {
+        return dispatcher.getString();
+        //return dispatcher.getExistedAddress(ContractName_UserService, "not exist");
     }
 }
