@@ -37,13 +37,15 @@ const migration: Truffle.Migration = async function (deployer, network, accounts
   console.log("proxy's implementation address is: " + implAddress);
 
   const deployResult = {
-    owner: account,
-    proxyed: {
+    ownerAddr: account,
+    proxyedAddr: {
       proxy: proxiedFacade.address,
       admin: adminAdress,
       implementation: implAddress
     },
-    network: network
+    network: network,
+    updated: (new Date()).toLocaleString('cn-ZH')
+
   };
   fs.writeFileSync('output/deployed.json', JSON.stringify(deployResult, null, 4));
 
