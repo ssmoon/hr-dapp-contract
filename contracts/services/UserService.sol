@@ -8,8 +8,7 @@ import "../interface/IUserService.sol";
 import "../infra/BaseResolver.sol";
 
 contract UserService is ContractName, IUserService, BaseResolver {
-    constructor(address _dispatcher, address _owner)
-    {}
+    constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     function createUser(address addr) external {
         IUserStorage userStorage = IUserStorage(

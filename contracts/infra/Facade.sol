@@ -145,16 +145,6 @@ contract Facade is ContractName, Initializable, Ownable, AccessControl {
         return userService.checkUserExist(addr);
     }
 
-    function getOwner() external view returns (bytes32) {
-        IUserService userService = IUserService(
-            dispatcher.getExistedAddress(
-                ContractName_UserService,
-                "UserService not Found"
-            )
-        );
-        return userService.getOwner();
-    }
-
     function ping() external pure returns (bytes32) {
         return ContractName_UserService;
     }

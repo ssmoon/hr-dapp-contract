@@ -8,11 +8,19 @@
 // const mnemonic = "market print rigid attract satoshi choose genuine setup minute artist pottery domain";
 // const provider = new HDWalletProvider(mnemonic, "HTTP://127.0.0.1:8545");
 
+import fs from 'fs'
+
 // const loader = setupLoader({ provider: new Web3(provider) }).web3;
 const FacadeContract = artifacts.require('Facade')
 contract("restricted user management, including create, remove and its access restriction", accounts => {
+  let proxyAddr: string;
+  before(() => {
+    const deployedConfig = JSON.parse(fs.readFileSync("output/deployed.json", 'utf-8'));
+    proxyAddr = deployedConfig.proxyed.proxy;
+  })
+
   it("test network", async () => {
-    const existing = await FacadeContract.at("0x4CD657c6420Bd67879D202abe3506F22747F250B");
+    const existing = await FacadeContract.at(proxyAddr);
     const result = await existing.pong();
     console.log(result);
   })

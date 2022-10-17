@@ -7,6 +7,4 @@ interface IUserService {
     function removeUser(address addr) external;
 
     function checkUserExist(address addr) external view returns (bool);
-    
-    function getOwner() external view returns (bytes32);
 }
