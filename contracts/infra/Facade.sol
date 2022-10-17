@@ -2,8 +2,8 @@
 pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 import "./Dispatcher.sol";
 import "../interface/IDispatcher.sol";
@@ -14,7 +14,12 @@ import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
 import "../infra/BaseResolver.sol";
 
-contract Facade is ContractName, Initializable, Ownable, AccessControl {
+contract Facade is
+    ContractName,
+    Initializable,
+    OwnableUpgradeable,
+    AccessControlUpgradeable
+{
     bytes32 public constant SUPERVISOR_ROLE = keccak256("SUPERVISOR_ROLE");
     IDispatcher internal dispatcher;
 

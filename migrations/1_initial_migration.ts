@@ -1,7 +1,6 @@
 const { deployProxy, upgradeProxy, erc1967 } = require('@openzeppelin/truffle-upgrades');
 var fs = require('fs');
 
-const ProxyContract = artifacts.require('Proxy')
 const DispatcherContract = artifacts.require('Dispatcher')
 const FacadeContract = artifacts.require('Facade')
 
@@ -23,7 +22,7 @@ const migration: Truffle.Migration = async function (deployer, network, accounts
   console.log("deploying start with owner account: " + account);
 
   // contract discovery center
-  await deployer.deploy(DispatcherContract, account);
+  await deployer.deploy(DispatcherContract);
   const DispatcherDeployed = await DispatcherContract.deployed();
 
   const proxiedFacade = await deployProxy(FacadeContract, [DispatcherDeployed.address], { deployer, initializer: 'initialize' });
@@ -33,20 +32,7 @@ const migration: Truffle.Migration = async function (deployer, network, accounts
   console.log("proxy's admin address is: " + adminAdress);
   console.log("proxy's implementation address is: " + implAddress);
 
-  const deployResult = {
-    ownerAddr: account,
-    proxyedAddr: {
-      proxy: proxiedFacade.address,
-      admin: adminAdress,
-      implementation: implAddress
-    },
-    network: network,
-    updated: (new Date()).toLocaleString('cn-ZH')
-
-  };
-  fs.writeFileSync('output/deployed.json', JSON.stringify(deployResult, null, 4));
-
-  await deployer.deploy(UserServiceContract, DispatcherDeployed.address, account);
+  await deployer.deploy(UserServiceContract, DispatcherDeployed.address);
   await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserService"), UserServiceContract.address, { from: account });
 
   await deployer.deploy(UserStorageContract, DispatcherDeployed.address);
