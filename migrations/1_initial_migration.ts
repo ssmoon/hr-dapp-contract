@@ -4,9 +4,6 @@ var fs = require('fs');
 const DispatcherContract = artifacts.require('Dispatcher')
 const FacadeContract = artifacts.require('Facade')
 
-const UserServiceContract = artifacts.require('UserService')
-const UserStorageContract = artifacts.require('UserStorage')
-
 const CareerServiceContract = artifacts.require('CareerService')
 const CareerStorageContract = artifacts.require('CareerStorage')
 
@@ -25,7 +22,7 @@ const migration: Truffle.Migration = async function (deployer, network, accounts
   await deployer.deploy(DispatcherContract);
   const DispatcherDeployed = await DispatcherContract.deployed();
 
-  const proxiedFacade = await deployProxy(FacadeContract, [DispatcherDeployed.address], { deployer, initializer: 'initialize' });
+  const proxiedFacade = await deployProxy(FacadeContract, [DispatcherDeployed.address], { deployer, initializer: 'initialize', from: account });
   const adminAdress = (await erc1967.getAdminAddress(proxiedFacade.address));
   const implAddress = (await erc1967.getImplementationAddress(proxiedFacade.address));
   console.log("proxy's address is: " + proxiedFacade.address);
@@ -43,12 +40,6 @@ const migration: Truffle.Migration = async function (deployer, network, accounts
     updated: (new Date()).toLocaleString('cn-ZH')
   };
   fs.writeFileSync('output/deployed.json', JSON.stringify(deployResult, null, 4));
-
-  await deployer.deploy(UserServiceContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserService"), UserServiceContract.address, { from: account });
-
-  await deployer.deploy(UserStorageContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserStorage"), UserStorageContract.address, { from: account });
 
   await deployer.deploy(CareerServiceContract, DispatcherDeployed.address);
   await DispatcherDeployed.importAddress(web3.utils.fromAscii("CareerService"), CareerServiceContract.address, { from: account });

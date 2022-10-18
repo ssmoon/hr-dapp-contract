@@ -1,28 +1,57 @@
-// const ProxyContract = artifacts.require('Proxy')
-// import Web3 from 'web3';
-// import { setupLoader } from '@openzeppelin/contract-loader';
-// // import Web3, { Web3.utils } from 'web3';
-// import HDWalletProvider from '@truffle/hdwallet-provider';
-// import { FacadeInstance } from '../types/truffle-contracts/Facade';
-// const truffleAssert = require('truffle-assertions');
-// const mnemonic = "market print rigid attract satoshi choose genuine setup minute artist pottery domain";
-// const provider = new HDWalletProvider(mnemonic, "HTTP://127.0.0.1:8545");
-
 import fs from 'fs'
+import { FacadeContract, FacadeInstance } from '../types/truffle-contracts';
+const {
+  expectRevert, // Assertions for transactions that should fail
+} = require('@openzeppelin/test-helpers');
 
-// const loader = setupLoader({ provider: new Web3(provider) }).web3;
 const FacadeContract = artifacts.require('Facade')
-contract("restricted user management, including create, remove and its access restriction", accounts => {
+
+contract("privileged user management, including create, remove and access control", accounts => {
+  const ownerAddr = accounts[0];
+  const privilegedAddr = accounts[1];
+  const strangerAddr = accounts[2];
+
   let proxyAddr: string;
-  before(() => {
+  let facade: FacadeInstance;
+  before(async () => {
     const deployedConfig = JSON.parse(fs.readFileSync("output/deployed.json", 'utf-8'));
     proxyAddr = deployedConfig.proxyedAddr.proxy;
+    facade = await FacadeContract.at(proxyAddr);
   })
 
-  it("test network", async () => {
-    const existing = await FacadeContract.at(proxyAddr);
-    const result = await existing.pong();
-    console.log(result);
+  it("ping with no restirction", async () => {
+    const result = await facade.ping();
+    expect(web3.utils.hexToUtf8(result)).to.equal("pong")
+  })
+
+  it("require addr to be owner, but it does not", async () => {
+    await expectRevert.unspecified(
+      facade.pingByOwner({ from: strangerAddr })
+    );
+  })
+
+  it("use owner addr to visit onlyOwner function", async () => {
+    const result = await facade.pingByOwner({ from: ownerAddr });
+    expect(web3.utils.hexToUtf8(result)).to.equal("pong");
+  })
+
+  it("require addr to be privileged user, but it does not", async () => {
+    await expectRevert.unspecified(
+      facade.pingByPrivilegedUser()
+    );
+  })
+
+  it("grant addr to be privileged, then it could visit the function", async () => {
+    await facade.createUser(privilegedAddr, { from: ownerAddr });
+    const result = await facade.pingByPrivilegedUser({ from: privilegedAddr });
+    expect(web3.utils.hexToUtf8(result)).to.equal("pong");
+  })
+
+  it("remove addr from privileged list, then it fails to visit the function", async () => {
+    await facade.removeUser(privilegedAddr, { from: ownerAddr });
+    await expectRevert.unspecified(
+      facade.pingByPrivilegedUser({ from: privilegedAddr })
+    );
   })
 })
 

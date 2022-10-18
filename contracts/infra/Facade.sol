@@ -2,7 +2,6 @@
 pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 import "./Dispatcher.sol";
@@ -13,17 +12,13 @@ import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
 import "../infra/BaseResolver.sol";
 
-contract Facade is
-    ContractName,
-    Initializable,
-    OwnableUpgradeable,
-    AccessControlUpgradeable
-{
+contract Facade is ContractName, Initializable, AccessControlUpgradeable {
     bytes32 public constant PRIVILEGED_ROLE = keccak256("PRIVILEGED_ROLE");
     IDispatcher internal dispatcher;
 
     function initialize(address _dispatcher) public initializer {
         dispatcher = IDispatcher(_dispatcher);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     function createCertificate(
@@ -119,11 +114,13 @@ contract Facade is
         return workerService.getWorkerBySecurityNo(securityNo);
     }
 
-    function createUser(address addr) external onlyOwner {
+    // the internal function call will validate user purview
+    function createUser(address addr) external {
         grantRole(PRIVILEGED_ROLE, addr);
     }
 
-    function removeUser(address addr) external onlyOwner {
+    // the internal function call will validate user purview
+    function removeUser(address addr) external {
         revokeRole(PRIVILEGED_ROLE, addr);
     }
 
@@ -132,12 +129,24 @@ contract Facade is
     }
 
     function ping() external pure returns (bytes32) {
-        return ContractName_UserService;
+        return "pong";
     }
 
-    function pong() external view returns (address) {
-        // return dispatcher.getString();
-        return
-            dispatcher.getExistedAddress(ContractName_UserService, "not exist");
+    function pingByOwner()
+        external
+        view
+        onlyRole(getRoleAdmin(DEFAULT_ADMIN_ROLE))
+        returns (bytes32)
+    {
+        return "pong";
+    }
+
+    function pingByPrivilegedUser()
+        external
+        view
+        onlyRole(PRIVILEGED_ROLE)
+        returns (bytes32)
+    {
+        return "pong";
     }
 }
