@@ -8,7 +8,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "./Dispatcher.sol";
 import "../interface/IDispatcher.sol";
 import "../consts/ContractName.sol";
-import "../interface/IUserService.sol";
 import "../interface/ICertificateService.sol";
 import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
@@ -20,7 +19,7 @@ contract Facade is
     OwnableUpgradeable,
     AccessControlUpgradeable
 {
-    bytes32 public constant SUPERVISOR_ROLE = keccak256("SUPERVISOR_ROLE");
+    bytes32 public constant PRIVILEGED_ROLE = keccak256("PRIVILEGED_ROLE");
     IDispatcher internal dispatcher;
 
     function initialize(address _dispatcher) public initializer {
@@ -30,7 +29,7 @@ contract Facade is
     function createCertificate(
         bytes18 securityNo,
         CertificateDefine.Certificate calldata certifcate
-    ) external onlyRole(SUPERVISOR_ROLE) {
+    ) external onlyRole(PRIVILEGED_ROLE) {
         ICertificateService certificateService = ICertificateService(
             dispatcher.getExistedAddress(
                 ContractName_CertificateService,
@@ -57,7 +56,7 @@ contract Facade is
     function addWorkExperience(
         bytes18 securityNo,
         WorkExperienceDefine.WorkExperience calldata workExperience
-    ) external onlyRole(SUPERVISOR_ROLE) {
+    ) external onlyRole(PRIVILEGED_ROLE) {
         ICareerService careerService = ICareerService(
             dispatcher.getExistedAddress(
                 ContractName_CareerService,
@@ -69,7 +68,7 @@ contract Facade is
 
     function finishLastCareer(bytes18 securityNo, uint16 endYear)
         external
-        onlyRole(SUPERVISOR_ROLE)
+        onlyRole(PRIVILEGED_ROLE)
     {
         ICareerService careerService = ICareerService(
             dispatcher.getExistedAddress(
@@ -95,7 +94,7 @@ contract Facade is
 
     function createWorker(WorkerDefine.Worker calldata worker)
         external
-        onlyRole(SUPERVISOR_ROLE)
+        onlyRole(PRIVILEGED_ROLE)
     {
         IWorkerService workerService = IWorkerService(
             dispatcher.getExistedAddress(
@@ -120,34 +119,16 @@ contract Facade is
         return workerService.getWorkerBySecurityNo(securityNo);
     }
 
-    function createUser(address addr) external onlyRole(SUPERVISOR_ROLE) {
-        IUserService userService = IUserService(
-            dispatcher.getExistedAddress(
-                ContractName_UserService,
-                "UserService not Found"
-            )
-        );
-        userService.createUser(addr);
+    function createUser(address addr) external onlyOwner {
+        grantRole(PRIVILEGED_ROLE, addr);
     }
 
-    function removeUser(address addr) external onlyRole(SUPERVISOR_ROLE) {
-        IUserService userService = IUserService(
-            dispatcher.getExistedAddress(
-                ContractName_UserService,
-                "UserService not Found"
-            )
-        );
-        userService.removeUser(addr);
+    function removeUser(address addr) external onlyOwner {
+        revokeRole(PRIVILEGED_ROLE, addr);
     }
 
     function checkUserExist(address addr) external view returns (bool) {
-        IUserService userService = IUserService(
-            dispatcher.getExistedAddress(
-                ContractName_UserService,
-                "UserService not Found"
-            )
-        );
-        return userService.checkUserExist(addr);
+        return hasRole(PRIVILEGED_ROLE, addr);
     }
 
     function ping() external pure returns (bytes32) {
