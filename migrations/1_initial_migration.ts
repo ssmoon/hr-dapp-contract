@@ -1,4 +1,6 @@
-const ProxyContract = artifacts.require('Proxy')
+const { deployProxy, upgradeProxy, erc1967 } = require('@openzeppelin/truffle-upgrades');
+var fs = require('fs');
+
 const DispatcherContract = artifacts.require('Dispatcher')
 const FacadeContract = artifacts.require('Facade')
 
@@ -14,38 +16,45 @@ const WorkerStorageContract = artifacts.require('WorkerStorage')
 const CertificateServiceContract = artifacts.require('CertificateService')
 const CertificateStorageContract = artifacts.require('CertificateStorage')
 
-const migration: Truffle.Migration = async function (deployer, _, accounts) {
+const migration: Truffle.Migration = async function (deployer, network, accounts) {
   const account = accounts[0];
 
-  console.log("deploying start with account: " + account);
-
-  await deployer.deploy(ProxyContract)
-  const ProxyDeployed = await ProxyContract.deployed();
+  console.log("deploying start with owner account: " + account);
 
   // contract discovery center
-  await deployer.deploy(DispatcherContract, account);
+  await deployer.deploy(DispatcherContract);
   const DispatcherDeployed = await DispatcherContract.deployed();
 
-  // proxy delegate impl
-  await deployer.deploy(FacadeContract, DispatcherDeployed.address, account);
-  await DispatcherDeployed.importAddress(web3.utils.fromAscii("Facade"), FacadeContract.address, { from: account });
+  const proxiedFacade = await deployProxy(FacadeContract, [DispatcherDeployed.address], { deployer, initializer: 'initialize' });
+  const adminAdress = (await erc1967.getAdminAddress(proxiedFacade.address));
+  const implAddress = (await erc1967.getImplementationAddress(proxiedFacade.address));
+  console.log("proxy's address is: " + proxiedFacade.address);
+  console.log("proxy's admin address is: " + adminAdress);
+  console.log("proxy's implementation address is: " + implAddress);
 
-  // set current proxyed impl
-  await ProxyDeployed.setImplementation(FacadeContract.address);
-
-  // deploy and register all other contracts
-
-  await deployer.deploy(CareerServiceContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress(web3.utils.fromAscii("CareerService"), CareerServiceContract.address, { from: account });
-
-  await deployer.deploy(CareerStorageContract, DispatcherDeployed.address);
-  await DispatcherDeployed.importAddress(web3.utils.fromAscii("CareerStorage"), CareerStorageContract.address, { from: account });
+  const deployResult = {
+    ownerAddr: account,
+    proxyedAddr: {
+      proxy: proxiedFacade.address,
+      admin: adminAdress,
+      implementation: implAddress
+    },
+    network: network,
+    updated: (new Date()).toLocaleString('cn-ZH')
+  };
+  fs.writeFileSync('output/deployed.json', JSON.stringify(deployResult, null, 4));
 
   await deployer.deploy(UserServiceContract, DispatcherDeployed.address);
   await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserService"), UserServiceContract.address, { from: account });
 
   await deployer.deploy(UserStorageContract, DispatcherDeployed.address);
   await DispatcherDeployed.importAddress(web3.utils.fromAscii("UserStorage"), UserStorageContract.address, { from: account });
+
+  await deployer.deploy(CareerServiceContract, DispatcherDeployed.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("CareerService"), CareerServiceContract.address, { from: account });
+
+  await deployer.deploy(CareerStorageContract, DispatcherDeployed.address);
+  await DispatcherDeployed.importAddress(web3.utils.fromAscii("CareerStorage"), CareerStorageContract.address, { from: account });
 
   await deployer.deploy(WorkerServiceContract, DispatcherDeployed.address);
   await DispatcherDeployed.importAddress(web3.utils.fromAscii("WorkerService"), WorkerServiceContract.address, { from: account });

@@ -5,7 +5,7 @@ import "./Dispatcher.sol";
 import "../interface/IDispatcher.sol";
 
 contract BaseResolver {
-    IDispatcher public dispatcher;
+    IDispatcher internal dispatcher;
 
     constructor(address _dispatcher) {
         dispatcher = IDispatcher(_dispatcher);

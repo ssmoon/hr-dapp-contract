@@ -1,26 +1,35 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+
 import "./Dispatcher.sol";
-import "./RestrictedUser.sol";
-import "./Owned.sol";
-import "../interface/IUserService.sol";
+import "../interface/IDispatcher.sol";
+import "../consts/ContractName.sol";
 import "../interface/ICertificateService.sol";
 import "../interface/ICareerService.sol";
 import "../interface/IWorkerService.sol";
-import "../interface/IFacade.sol";
 import "../infra/BaseResolver.sol";
 
-contract Facade is IFacade, RestrictedUser, Owned {
-    constructor(address _dispatcher, address _owner)
-        RestrictedUser(_dispatcher)
-        Owned(_owner)
-    {}
+contract Facade is
+    ContractName,
+    Initializable,
+    OwnableUpgradeable,
+    AccessControlUpgradeable
+{
+    bytes32 public constant PRIVILEGED_ROLE = keccak256("PRIVILEGED_ROLE");
+    IDispatcher internal dispatcher;
+
+    function initialize(address _dispatcher) public initializer {
+        dispatcher = IDispatcher(_dispatcher);
+    }
 
     function createCertificate(
         bytes18 securityNo,
         CertificateDefine.Certificate calldata certifcate
-    ) external restricted {
+    ) external onlyRole(PRIVILEGED_ROLE) {
         ICertificateService certificateService = ICertificateService(
             dispatcher.getExistedAddress(
                 ContractName_CertificateService,
@@ -47,7 +56,7 @@ contract Facade is IFacade, RestrictedUser, Owned {
     function addWorkExperience(
         bytes18 securityNo,
         WorkExperienceDefine.WorkExperience calldata workExperience
-    ) external restricted {
+    ) external onlyRole(PRIVILEGED_ROLE) {
         ICareerService careerService = ICareerService(
             dispatcher.getExistedAddress(
                 ContractName_CareerService,
@@ -59,7 +68,7 @@ contract Facade is IFacade, RestrictedUser, Owned {
 
     function finishLastCareer(bytes18 securityNo, uint16 endYear)
         external
-        restricted
+        onlyRole(PRIVILEGED_ROLE)
     {
         ICareerService careerService = ICareerService(
             dispatcher.getExistedAddress(
@@ -85,7 +94,7 @@ contract Facade is IFacade, RestrictedUser, Owned {
 
     function createWorker(WorkerDefine.Worker calldata worker)
         external
-        restricted
+        onlyRole(PRIVILEGED_ROLE)
     {
         IWorkerService workerService = IWorkerService(
             dispatcher.getExistedAddress(
@@ -111,22 +120,24 @@ contract Facade is IFacade, RestrictedUser, Owned {
     }
 
     function createUser(address addr) external onlyOwner {
-        IUserService userService = IUserService(
-            dispatcher.getExistedAddress(
-                ContractName_UserService,
-                "UserService not Found"
-            )
-        );
-        userService.createUser(addr);
+        grantRole(PRIVILEGED_ROLE, addr);
     }
 
     function removeUser(address addr) external onlyOwner {
-        IUserService userService = IUserService(
-            dispatcher.getExistedAddress(
-                ContractName_UserService,
-                "UserService not Found"
-            )
-        );
-        userService.removeUser(addr);
+        revokeRole(PRIVILEGED_ROLE, addr);
+    }
+
+    function checkUserExist(address addr) external view returns (bool) {
+        return hasRole(PRIVILEGED_ROLE, addr);
+    }
+
+    function ping() external pure returns (bytes32) {
+        return ContractName_UserService;
+    }
+
+    function pong() external view returns (address) {
+        // return dispatcher.getString();
+        return
+            dispatcher.getExistedAddress(ContractName_UserService, "not exist");
     }
 }

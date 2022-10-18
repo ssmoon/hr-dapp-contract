@@ -1,23 +1,18 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
-import "./Owned.sol";
 import "../interface/IDispatcher.sol";
 
-contract Dispatcher is Owned, IDispatcher {
+contract Dispatcher is IDispatcher {
     mapping(bytes32 => address) public repository;
 
-    constructor(address _owner) Owned(_owner) {}
-
-    function importAddress(bytes32 name, address destination)
-        external
-        onlyOwner
-    {
+    function importAddress(bytes32 name, address destination) public {
         require(repository[name] == address(0), "address already exists");
         repository[name] = destination;
+        emit AddressImported(name, destination);
     }
 
-    function removeAddress(bytes32 name) external onlyOwner {
+    function removeAddress(bytes32 name) external {
         delete repository[name];
     }
 

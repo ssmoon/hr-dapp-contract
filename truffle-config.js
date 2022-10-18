@@ -1,6 +1,7 @@
 require("ts-node").register({
-  files: true
+  files: true,
 });
+
 module.exports = {
   networks: {
     development: {

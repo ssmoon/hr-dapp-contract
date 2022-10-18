@@ -11,3 +11,11 @@ cache
 
 # macOS
 .DS_Store
+
+.vscode
+
+# OpenZeppelin
+.openzeppelin/unknown-*.json
+
+#output
+output/deployed.json
