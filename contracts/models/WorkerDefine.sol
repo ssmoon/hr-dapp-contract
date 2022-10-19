@@ -4,6 +4,7 @@ pragma solidity 0.8.17;
 library WorkerDefine {
     struct Worker {
         // unique value for Chinese citizens, 18 digits
+        // processed by keccak256(web3.js's soliditysha3) 
         bytes32 securityNo;
         uint16 graduatedAt;
         uint16 birthAt;

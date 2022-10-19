@@ -10,7 +10,7 @@ contract("worker's certificate acquired log", accounts => {
   const ownerAddr = accounts[0];
   const privilegedAddr = accounts[1];
   const testWorker = {
-    securityNo: web3.utils.padRight(web3.utils.asciiToHex("1201181995111811415"), 64),
+    securityNo: web3.utils.soliditySha3("1101181995111811415") as string,
     graduatedAt: 2014,
     birthAt: 1995,
     collegeCode: web3.utils.padRight(web3.utils.asciiToHex("DUT"), 64),
