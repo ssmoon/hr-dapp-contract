@@ -6,6 +6,6 @@ library WorkExperienceDefine {
         uint16 startAt;
         uint16 endAt;
         bool hasEnded;
-        bytes10 companyCode;
+        bytes32 companyCode;
     }
 }

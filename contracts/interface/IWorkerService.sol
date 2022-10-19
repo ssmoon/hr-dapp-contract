@@ -7,7 +7,7 @@ import "../models/WorkerDefine.sol";
 interface IWorkerService {
     function createWorker(WorkerDefine.Worker calldata worker) external;
 
-    function getWorkerBySecurityNo(bytes18 securityNo)
+    function getWorkerBySecurityNo(bytes32 securityNo)
         external
         view
         returns (WorkerDefine.Worker memory);

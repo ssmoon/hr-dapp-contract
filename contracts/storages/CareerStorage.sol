@@ -9,16 +9,16 @@ import "../interface/ICareerStorage.sol";
 contract CareerStorage is ICareerStorage, BaseResolver {
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
-    mapping(bytes18 => WorkExperienceDefine.WorkExperience[]) workerExperienceMap;
+    mapping(bytes32 => WorkExperienceDefine.WorkExperience[]) workerExperienceMap;
 
     function createCareer(
-        bytes18 securityNo,
+        bytes32 securityNo,
         WorkExperienceDefine.WorkExperience calldata newExperience
     ) external {
         workerExperienceMap[securityNo].push(newExperience);
     }
 
-    function finishLastCareer(bytes18 securityNo, uint16 endYear) external {
+    function finishLastCareer(bytes32 securityNo, uint16 endYear) external {
         WorkExperienceDefine.WorkExperience[]
             storage existedExperiences = workerExperienceMap[securityNo];
         require(existedExperiences.length > 0, "last experience not found");
@@ -31,7 +31,7 @@ contract CareerStorage is ICareerStorage, BaseResolver {
         lastExperience.endAt = endYear;
     }
 
-    function getLastCareer(bytes18 securityNo)
+    function getLastCareer(bytes32 securityNo)
         external
         view
         returns (WorkExperienceDefine.WorkExperience memory)
@@ -51,7 +51,7 @@ contract CareerStorage is ICareerStorage, BaseResolver {
         }
     }
 
-    function getCareerBySecurityNo(bytes18 securityNo)
+    function getCareerBySecurityNo(bytes32 securityNo)
         external
         view
         returns (WorkExperienceDefine.WorkExperience[] memory)
