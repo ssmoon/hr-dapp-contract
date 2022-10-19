@@ -22,7 +22,7 @@ contract Facade is ContractName, Initializable, AccessControlUpgradeable {
     }
 
     function createCertificate(
-        bytes18 securityNo,
+        bytes32 securityNo,
         CertificateDefine.Certificate calldata certifcate
     ) external onlyRole(PRIVILEGED_ROLE) {
         ICertificateService certificateService = ICertificateService(
@@ -34,7 +34,7 @@ contract Facade is ContractName, Initializable, AccessControlUpgradeable {
         certificateService.createCertificate(securityNo, certifcate);
     }
 
-    function getCertificateBySecurityNo(bytes18 securityNo)
+    function getCertificateBySecurityNo(bytes32 securityNo)
         external
         view
         returns (CertificateDefine.Certificate[] memory)
@@ -49,7 +49,7 @@ contract Facade is ContractName, Initializable, AccessControlUpgradeable {
     }
 
     function addWorkExperience(
-        bytes18 securityNo,
+        bytes32 securityNo,
         WorkExperienceDefine.WorkExperience calldata workExperience
     ) external onlyRole(PRIVILEGED_ROLE) {
         ICareerService careerService = ICareerService(
@@ -61,7 +61,7 @@ contract Facade is ContractName, Initializable, AccessControlUpgradeable {
         careerService.addWorkExperience(securityNo, workExperience);
     }
 
-    function finishLastCareer(bytes18 securityNo, uint16 endYear)
+    function finishLastCareer(bytes32 securityNo, uint16 endYear)
         external
         onlyRole(PRIVILEGED_ROLE)
     {
@@ -74,7 +74,7 @@ contract Facade is ContractName, Initializable, AccessControlUpgradeable {
         careerService.finishLastCareer(securityNo, endYear);
     }
 
-    function getWorkExperienceBySecurityNo(bytes18 securityNo)
+    function getWorkExperienceBySecurityNo(bytes32 securityNo)
         external
         returns (WorkExperienceDefine.WorkExperience[] memory)
     {
@@ -100,7 +100,7 @@ contract Facade is ContractName, Initializable, AccessControlUpgradeable {
         workerService.createWorker(worker);
     }
 
-    function getWorkerBySecurityNo(bytes18 securityNo)
+    function getWorkerBySecurityNo(bytes32 securityNo)
         external
         view
         returns (WorkerDefine.Worker memory)

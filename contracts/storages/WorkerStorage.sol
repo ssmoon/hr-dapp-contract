@@ -8,7 +8,7 @@ import "../interface/IWorkerStorage.sol";
 contract WorkerStorage is IWorkerStorage, BaseResolver {
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
-    mapping(bytes18 => WorkerDefine.Worker) workerMap;
+    mapping(bytes32 => WorkerDefine.Worker) workerMap;
 
     function createWorker(WorkerDefine.Worker calldata worker) external {
         workerMap[worker.securityNo] = worker;
@@ -19,7 +19,7 @@ contract WorkerStorage is IWorkerStorage, BaseResolver {
         // existedWorker.isValue = true;
     }
 
-    function getWorkerBySecurityNo(bytes18 securityNo)
+    function getWorkerBySecurityNo(bytes32 securityNo)
         external
         view
         returns (WorkerDefine.Worker memory)
@@ -27,7 +27,7 @@ contract WorkerStorage is IWorkerStorage, BaseResolver {
         return workerMap[securityNo];
     }
 
-    function checkWorkerExist(bytes18 securityNo) external view returns (bool) {
+    function checkWorkerExist(bytes32 securityNo) external view returns (bool) {
         return workerMap[securityNo].isValue;
     }
 }

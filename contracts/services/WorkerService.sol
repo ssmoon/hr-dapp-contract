@@ -31,9 +31,10 @@ contract WorkerService is
         bool exist = workerStorage.checkWorkerExist(worker.securityNo);
         require(!exist, "this securityNo already exists");
         workerStorage.createWorker(worker);
+        emit workerCreated(worker);
     }
 
-    function getWorkerBySecurityNo(bytes18 securityNo)
+    function getWorkerBySecurityNo(bytes32 securityNo)
         external
         view
         returns (WorkerDefine.Worker memory)
@@ -46,4 +47,6 @@ contract WorkerService is
         );
         return workerStorage.getWorkerBySecurityNo(securityNo);
     }
+
+    event workerCreated(WorkerDefine.Worker worker);
 }

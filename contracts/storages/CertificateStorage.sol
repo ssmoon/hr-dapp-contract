@@ -8,10 +8,10 @@ import "../interface/ICertificateStorage.sol";
 contract CertificateStorage is ICertificateStorage, BaseResolver {
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
-    mapping(bytes18 => CertificateDefine.Certificate[]) certificateMap;
+    mapping(bytes32 => CertificateDefine.Certificate[]) certificateMap;
 
     function createCertificate(
-        bytes18 securityNo,
+        bytes32 securityNo,
         CertificateDefine.Certificate calldata certifcate
     ) external {
         CertificateDefine.Certificate[] storage certificates = certificateMap[
@@ -20,7 +20,7 @@ contract CertificateStorage is ICertificateStorage, BaseResolver {
         certificates.push(certifcate);
     }
 
-    function getCertificateBySecurityNo(bytes18 securityNo)
+    function getCertificateBySecurityNo(bytes32 securityNo)
         external
         view
         returns (CertificateDefine.Certificate[] memory)
@@ -29,5 +29,20 @@ contract CertificateStorage is ICertificateStorage, BaseResolver {
             securityNo
         ];
         return certs;
+    }
+
+    function checkUserHasCertificate(
+        bytes32 securityNo,
+        bytes32 certificateCode
+    ) external view returns (bool) {
+        CertificateDefine.Certificate[] memory certs = certificateMap[
+            securityNo
+        ];
+        for (uint i; i < certs.length; i++) {
+            if (certs[i].certCode == certificateCode) {
+                return true;
+            }
+        }
+        return false;
     }
 }

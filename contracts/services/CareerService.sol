@@ -17,7 +17,7 @@ contract CareerService is
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     function addWorkExperience(
-        bytes18 securityNo,
+        bytes32 securityNo,
         WorkExperienceDefine.WorkExperience memory workExperience
     ) external {
         IWorkerStorage workerStorage = IWorkerStorage(
@@ -55,9 +55,10 @@ contract CareerService is
             careerIntr.finishLastCareer(securityNo, currentYear);
         }
         careerIntr.createCareer(securityNo, workExperience);
+        emit careerExperienceCreated(workExperience);
     }
 
-    function finishLastCareer(bytes18 securityNo, uint16 endYear) external {
+    function finishLastCareer(bytes32 securityNo, uint16 endYear) external {
         IWorkerStorage workerStorage = IWorkerStorage(
             dispatcher.getExistedAddress(
                 ContractName_WorkerStorage,
@@ -86,7 +87,7 @@ contract CareerService is
         careerIntr.finishLastCareer(securityNo, endYear);
     }
 
-    function getWorkExperienceBySecurityNo(bytes18 securityNo)
+    function getWorkExperienceBySecurityNo(bytes32 securityNo)
         external
         view
         returns (WorkExperienceDefine.WorkExperience[] memory)
@@ -108,4 +109,6 @@ contract CareerService is
         );
         return careerIntr.getCareerBySecurityNo(securityNo);
     }
+
+    event careerExperienceCreated(WorkExperienceDefine.WorkExperience workExperience);
 }

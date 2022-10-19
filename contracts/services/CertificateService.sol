@@ -11,7 +11,7 @@ contract CertificateService is ContractName, ICertificateService, BaseResolver {
     constructor(address _dispatcher) BaseResolver(_dispatcher) {}
 
     function createCertificate(
-        bytes18 securityNo,
+        bytes32 securityNo,
         CertificateDefine.Certificate calldata certifcate
     ) external {
         IWorkerStorage workerStorage = IWorkerStorage(
@@ -20,8 +20,11 @@ contract CertificateService is ContractName, ICertificateService, BaseResolver {
                 "WorkerStorage not Found"
             )
         );
-        bool exist = workerStorage.checkWorkerExist(securityNo);
-        require(exist, "securityNo not exist in worker repo, append it first");
+        bool workerExist = workerStorage.checkWorkerExist(securityNo);
+        require(
+            workerExist,
+            "securityNo not exist in worker repo, append it first"
+        );
 
         ICertificateStorage certificateStorage = ICertificateStorage(
             dispatcher.getExistedAddress(
@@ -29,10 +32,24 @@ contract CertificateService is ContractName, ICertificateService, BaseResolver {
                 "CertificateStorage not Found"
             )
         );
+
+        bool certExist = certificateStorage.checkUserHasCertificate(
+            securityNo,
+            certifcate.certCode
+        );
+        require(
+            !certExist,
+            string.concat(
+                "certCode: ",
+                string(abi.encodePacked(certifcate.certCode)),
+                " already exists"
+            )
+        );
+
         certificateStorage.createCertificate(securityNo, certifcate);
     }
 
-    function getCertificateBySecurityNo(bytes18 securityNo)
+    function getCertificateBySecurityNo(bytes32 securityNo)
         external
         view
         returns (CertificateDefine.Certificate[] memory)

@@ -6,11 +6,11 @@ const {
 
 const FacadeContract = artifacts.require('Facade')
 
-contract("worker maintenance, persistent worker general info on the chain", accounts => {
+contract("worker's certificate acquired log", accounts => {
   const ownerAddr = accounts[0];
   const privilegedAddr = accounts[1];
   const testWorker = {
-    securityNo: web3.utils.padRight(web3.utils.asciiToHex("1101081995111811415"), 64),
+    securityNo: web3.utils.padRight(web3.utils.asciiToHex("1201181995111811415"), 64),
     graduatedAt: 2014,
     birthAt: 1995,
     collegeCode: web3.utils.padRight(web3.utils.asciiToHex("DUT"), 64),
@@ -23,17 +23,17 @@ contract("worker maintenance, persistent worker general info on the chain", acco
     proxyAddr = deployedConfig.proxyedAddr.proxy;
     facade = await FacadeContract.at(proxyAddr);
     await facade.createUser(privilegedAddr, { from: ownerAddr });
-  })
-
-  it("should create new worker with unique securityNo", async () => {
     await facade.createWorker(testWorker, { from: privilegedAddr });
-    const existWorker = await facade.getWorkerBySecurityNo(testWorker.securityNo);
-    expect(existWorker.securityNo).to.equal(testWorker.securityNo);
   })
 
-  it("should revert duplicate securityNo", async () => {
-    await expectRevert.unspecified(
-      facade.createWorker(testWorker, { from: privilegedAddr })
-    );
+  it("should create a certificate and fetch the one", async () => {
+    await facade.createCertificate(testWorker.securityNo, {
+      certCode: web3.utils.padRight(web3.utils.asciiToHex("Electrician"), 64),
+      acquiredAt: 2019
+    }, { from: privilegedAddr })
+    const certificates = await facade.getCertificateBySecurityNo(testWorker.securityNo);
+    expect(certificates.length).to.equal(1);
+    expect(certificates[certificates.length - 1].certCode).to.equal(web3.utils.padRight(web3.utils.asciiToHex("Electrician"), 64));
   })
-})
+
+});
